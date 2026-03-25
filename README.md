@@ -1,46 +1,48 @@
 # Frame to Movies
 
-Simple dark-mode dashboard that generates a connected multi-scene movie from:
+> Generate a full multi-scene AI movie from a single image and a text prompt.
 
-- one scenario prompt (up to 1000 chars),
-- one uploaded frame-0 image,
-- number of scenes (X),
-- one aspect ratio used for all scenes.
+Frame to Movies is an AI-powered web app that turns a starting frame and a scenario 
+into a complete, concatenated video — scene by scene, preserving visual continuity 
+throughout the entire movie.
 
-The app uses Replicate (BLIP-2 + VEO 3.1) and FFmpeg to:
+## How it works
 
-1. Describe the start frame,
-2. Build scene prompt 0,
-3. Generate scene 0 video,
-4. Extract the last frame,
-5. Repeat for all scenes while preserving context,
-6. Concatenate all scene videos into one final movie.
+1. Upload a **starting frame** (image)
+2. Write a **scenario prompt** (up to 1000 chars)
+3. Choose the **number of scenes** and **aspect ratio**
+4. The app automatically:
+   - Describes the starting frame (BLIP-2)
+   - Generates scene 0 video (VEO 3.1 via Replicate)
+   - Extracts the last frame of each scene
+   - Uses it as the starting frame for the next scene
+   - Concatenates all scenes into one final movie (FFmpeg)
 
-## Requirements
+## Tech Stack
 
-- Node.js 20+
-- FFmpeg and FFprobe installed and available in `PATH`
-- Replicate API token
+- **Next.js** (App Router) + **TypeScript**
+- **Replicate API** — BLIP-2 (image captioning) + VEO 3.1 (video generation)
+- **FFmpeg** — video concatenation
+- **Tailwind CSS** — dark mode UI
 
-## Environment variables
+## Getting Started
 
-Create `.env.local`:
-
+**Requirements:** Node.js 20+, FFmpeg in PATH, Replicate API token
 ```bash
-REPLICATE_API_TOKEN=your_token_here
-# (or REPLICATE_API_KEY)
-```
-
-## Run
-
-```bash
+git clone https://github.com/olidev10/frametomovies.git
+cd frametomovies
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:3000`.
+Create `.env.local`:
+```
+REPLICATE_API_TOKEN=your_token_here
+```
 
-## API routes
+Open `http://localhost:3000`
 
-- `POST /api/generate` - accepts multipart form: `scenario`, `scenes`, `aspectRatio`, `image`
-- `POST /api/delete` - deletes generated movie from `/public/generated`
+## API Routes
+
+- `POST /api/generate` — accepts `scenario`, `scenes`, `aspectRatio`, `image`
+- `POST /api/delete` — removes generated movie from `/public/generated`
